@@ -1,19 +1,20 @@
-import spacy
-from configuration import *
-def est_une_cloze(sentence):
-    longueur_cloze = NOMBRE_MIN_CHAR_CLOZE <len(sentence) < NOMBRE_MAX_CHAR_CLOZE
-    no_links = not (("https://" in sentence) or ("http://" in sentence))
-    tokens = sentence.split()
-    taille_mots = all(TAILLE_MIN_MOT < len(mot) < TAILLE_MAX_MOT for mot in tokens)
-    nombre_mot = NOMBRE_MIN_MOT_CLOZE < len(tokens) < NOMBRE_MAX_MOT_CLOZE
-    return (longueur_cloze and no_links and taille_mots and nombre_mot)
-
+from generate_cloze import *
+from cp import *
+from noisy_cloze import *
+import nltk
 
 files = open("de.txt",'r')
 text = files.read()
-clozes = []
-nlp = spacy.load("en_core_web_sm")
-doc = nlp(text)
-for sents in doc.sents:
-    print(sents," bool ", est_une_cloze(str(sents)) ,"\n\n\n")
-    
+
+clozes = generate_cloze_fct(text)
+#print(list(clozes))
+#short_clozes = get_cloze_p(clozes)
+#qc = get_questions_for_clozes(clozes)
+k=0
+for cloze in clozes:
+        k+=1
+        if k == 2:
+                mot = nltk.word_tokenize(cloze.answer_text)
+                cc = shuffle_words(nltk.word_tokenize(cloze.answer_text),params=NoiserParams())
+                print(cc)
+          
